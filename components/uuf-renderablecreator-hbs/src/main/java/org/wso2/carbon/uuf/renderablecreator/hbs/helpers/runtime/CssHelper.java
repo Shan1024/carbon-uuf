@@ -23,6 +23,10 @@ import org.wso2.carbon.uuf.renderablecreator.hbs.core.HbsRenderable;
 import org.wso2.carbon.uuf.renderablecreator.hbs.helpers.FillPlaceholderHelper;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.List;
 import java.util.Set;
 
 public class CssHelper extends FillPlaceholderHelper<String> {
@@ -53,13 +57,25 @@ public class CssHelper extends FillPlaceholderHelper<String> {
             return "";
         }
 
-        StringBuilder buffer = new StringBuilder("<link href=\"")
-                .append(requestLookup.getPublicUri())
-                .append('/')
-                .append(completeRelativePath);
-        buffer.append("\" rel=\"stylesheet\" type=\"text/css\" />\n");
-        addToPlaceholder(buffer.toString(), options);
-        ((Set) options.data(HbsRenderable.DATA_KEY_RESOLVED_RESOURCES)).add(resourceIdentifier);
-        return "";
+        RequestLookup.RenderingFlowTracker tracker = requestLookup.tracker();
+        tracker.
+        if (tracker.isInFragment() && !tracker.isInPage()) {
+            byte[] allLines = Files.readAllBytes(Paths.get(relativePath));
+            String content = new String(allLines, StandardCharsets.UTF_8);
+            StringBuilder buffer = new StringBuilder("<style>\n");
+            buffer.append(content).append("\n").append("</style>\n");
+//            addToPlaceholder(buffer.toString(), options);
+//            ((Set) options.data(HbsRenderable.DATA_KEY_RESOLVED_RESOURCES)).add(resourceIdentifier);
+            return buffer.toString();
+        } else {
+            StringBuilder buffer = new StringBuilder("<link href=\"")
+                    .append(requestLookup.getPublicUri())
+                    .append('/')
+                    .append(completeRelativePath);
+            buffer.append("\" rel=\"stylesheet\" type=\"text/css\" />\n");
+            addToPlaceholder(buffer.toString(), options);
+            ((Set) options.data(HbsRenderable.DATA_KEY_RESOLVED_RESOURCES)).add(resourceIdentifier);
+            return "";
+        }
     }
 }

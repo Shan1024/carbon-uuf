@@ -322,7 +322,7 @@ public class HbsHelperTest {
         RequestLookup requestLookup = createRequestLookup();
         when(requestLookup.getPublicUri()).thenReturn("/myapp/public/component/base");
         HbsRenderable fragmentRenderable = new HbsFragmentRenderable(
-                new StringTemplateSource("", "{{css \"css/my-styles.css\"}}{{headJs \"js/my-script.js\"}}"));
+                new StringTemplateSource("<test-source>", "{{css \"css/my-styles.css\"}}{{headJs \"js/my-script.js\"}}"));
         Lookup lookup = createLookup();
         Fragment fragment = new Fragment("test.fragment", fragmentRenderable, false) {
             @Override
